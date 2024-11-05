@@ -21,5 +21,6 @@ class ApplicationController < ActionController::API
         def account_update_params
           params.permit(:name, :email, :password, :password_confirmation, :current_password)
         end
+        
       end
       
