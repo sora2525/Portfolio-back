@@ -1,5 +1,7 @@
 class Task < ApplicationRecord
     belongs_to :user
+    has_many :task_tags, dependent: :destroy
+    has_many :tags, through: :task_tags
 
     enum priority: { none: 0, low: 1, medium: 2, high: 3 }, _prefix: true
   
@@ -15,6 +17,6 @@ class Task < ApplicationRecord
         errors.add(:completion_date, "期日を超えることはできません") 
       end
     end
-    
+
   end
   

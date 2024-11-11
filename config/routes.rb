@@ -4,6 +4,7 @@ Rails.application.routes.draw do
       get "health_check", to: "health_check#index"
       mount_devise_token_auth_for "User", at: "auth"
       resources :tasks
+      resources :tags
     end
   end
 end
