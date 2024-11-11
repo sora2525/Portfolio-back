@@ -5,9 +5,24 @@ class Api::V1::TasksController < ApplicationController
   before_action :set_task, only: [:show, :update, :destroy]
 
   def index
-    @tasks = current_api_v1_user.tasks.includes(:tags) 
-    render json: @tasks, include: :tags
+    sort_by = params[:sort_by] || 'created_at'
+    order = params[:order] || 'asc'
+    tag_id = params[:tag_id]
+  
+    allowed_sort_columns = %w[created_at due_date priority]
+    sort_by = allowed_sort_columns.include?(sort_by) ? sort_by : 'created_at'
+    order = %w[asc desc].include?(order) ? order : 'asc'
+  
+    tasks_query = current_api_v1_user.tasks.includes(:tags).order("#{sort_by} #{order}")
+  
+    if tag_id.present?
+      tasks_query = tasks_query.joins(:tags).where(tags: { id: tag_id })
+    end
+  
+    @tasks = tasks_query
+    render json: @tasks.to_json(include: :tags)
   end
+  
 
   def show
     render json: @task, include: :tags
