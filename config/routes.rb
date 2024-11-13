@@ -7,4 +7,7 @@ Rails.application.routes.draw do
       resources :tags
     end
   end
+  if Rails.env.development?
+    mount LetterOpenerWeb::Engine, at: "/letter_opener"
+  end
 end
