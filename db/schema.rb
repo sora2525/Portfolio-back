@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_10_043340) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_18_132612) do
+  create_table "preferences", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.integer "affnity_level", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_preferences_on_user_id"
+  end
+
   create_table "tags", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "name"
@@ -67,6 +75,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_10_043340) do
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
 
+  add_foreign_key "preferences", "users"
   add_foreign_key "tags", "users"
   add_foreign_key "task_tags", "tags"
   add_foreign_key "task_tags", "tasks"
