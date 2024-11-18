@@ -9,7 +9,7 @@ class Api::V1::TasksController < ApplicationController
   order = params[:order] || 'asc'
   tag_id = params[:tag_id]
 
-  allowed_sort_columns = %w[created_at due_date priority]
+  allowed_sort_columns = %w[created_at due_date priority completion_date]
   sort_by = allowed_sort_columns.include?(sort_by) ? "tasks.#{sort_by}" : 'tasks.created_at' # テーブル名を指定
   order = %w[asc desc].include?(order) ? order : 'asc'
 
@@ -22,6 +22,7 @@ class Api::V1::TasksController < ApplicationController
   @tasks = tasks_query
   render json: @tasks.to_json(include: :tags)
 end
+
 
 
 
