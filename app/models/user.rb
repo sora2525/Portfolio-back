@@ -3,6 +3,7 @@
 class User < ActiveRecord::Base
   has_many :tasks, dependent: :destroy
   has_many :tags, dependent: :destroy
+  has_many :chats, dependent: :destroy
   has_one :preference, dependent: :destroy
   after_create :create_default_preference
 
