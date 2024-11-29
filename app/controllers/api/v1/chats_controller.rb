@@ -17,6 +17,13 @@ class Api::V1::ChatsController < ApplicationController
         render json: { error: @chat.errors.full_messages }, status: :unprocessable_entity
       end
     end
+
+    def destroy
+      @chats = current_api_v1_user.chats
+      @chats.destroy_all  
+      render json: { message: 'すべてのチャットが削除されました' }
+    end
+    
   
     private
   
