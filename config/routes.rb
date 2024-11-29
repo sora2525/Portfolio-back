@@ -5,7 +5,8 @@ Rails.application.routes.draw do
       mount_devise_token_auth_for "User", at: "auth"
       resources :tasks
       resources :tags
-      resources :chats,only: [:index,:create]
+      resources :chats, only: [:index, :create, :destroy]
+      delete '/chats', to: 'chats#destroy_all'
     end
   end
   if Rails.env.development?

@@ -18,11 +18,12 @@ class Api::V1::ChatsController < ApplicationController
       end
     end
 
-    def destroy
+    def destroy_all
       @chats = current_api_v1_user.chats
-      @chats.destroy_all  
-      render json: { message: 'すべてのチャットが削除されました' }
+      @chats.destroy_all
+      head :no_content 
     end
+    
     
   
     private
