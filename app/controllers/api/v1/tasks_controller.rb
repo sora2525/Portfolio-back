@@ -29,10 +29,16 @@ class Api::V1::TasksController < ApplicationController
 
   def create
     @task = current_api_v1_user.tasks.new(task_params)
+
+    # タグの数が5個を超えていないか確認
+    if params[:task][:tags].size > 5
+      return render json: { errors: 'タグは最大5個までです' }, status: :unprocessable_entity
+    end
+
     if @task.save
-      if params[:task][:tags]
-        # タグの関連付けを保存
-        @task.tags << Tag.where(id: params[:task][:tags])
+      if params[:task][:tags].present?
+        # タグIDをTagインスタンスに変換して関連付け
+        @task.tags = Tag.where(id: params[:task][:tags])
       end
       render json: @task, include: :tags, status: :created
     else
@@ -42,9 +48,13 @@ class Api::V1::TasksController < ApplicationController
 
   def update
     if @task.update(task_params)
-      # タグを更新する処理
+
+      if params[:task][:tags].size > 5
+        return render json: { errors: 'タグは最大5個までです' }, status: :unprocessable_entity
+      end
+      
       if params[:task][:tags]
-        @task.tags = Tag.where(id: params[:task][:tags]) # タグを更新
+        @task.tags = Tag.where(id: params[:task][:tags]) 
       end
 
       # completion_dateがnilならcompletion_messageをnilに設定
