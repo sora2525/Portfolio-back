@@ -5,23 +5,28 @@ class Api::V1::TasksController < ApplicationController
   before_action :set_task, only: [:show, :update, :destroy]
 
   def index
-    sort_by = params[:sort_by] || 'created_at'
-    order = params[:order] || 'asc'
-    tag_id = params[:tag_id]
-
-    allowed_sort_columns = %w[created_at due_date priority completion_date]
-    sort_by = allowed_sort_columns.include?(sort_by) ? "tasks.#{sort_by}" : 'tasks.created_at'
-    order = %w[asc desc].include?(order) ? order : 'asc'
-
-    tasks_query = current_api_v1_user.tasks.includes(:tags).order("#{sort_by} #{order}")
-
-    if tag_id.present?
-      tasks_query = tasks_query.joins(:tags).where(tags: { id: tag_id })
+    # ransackで検索・ソートを行う
+    @q = current_api_v1_user.tasks.ransack(params[:q])  # params[:q] で受け取る
+    @tasks = @q.result(distinct: true)  # 結果を取得
+  
+    # タグIDで絞り込み
+    if params[:tag_id].present?
+      @tasks = @tasks.joins(:tags).where(tags: { id: params[:tag_id] })
     end
-
-    @tasks = tasks_query
+  
+    # 完了済みタスク・未完了タスクで絞り込み
+    if params[:status].present?
+      if params[:status] == 'completed'
+        @tasks = @tasks.where.not(completion_date: nil)  # 完了済みタスク
+      elsif params[:status] == 'incomplete'
+        @tasks = @tasks.where(completion_date: nil)  # 未完了タスク
+      end
+    end
+  
     render json: @tasks.to_json(include: :tags)
   end
+  
+
 
   def show
     render json: @task, include: :tags

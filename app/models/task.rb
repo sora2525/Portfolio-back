@@ -8,4 +8,8 @@ class Task < ApplicationRecord
   validates :title, presence: true, length: { maximum: 100 }
   validates :description, length: { maximum: 300 }, allow_blank: true
 
+  def self.ransackable_attributes(auth_object = nil)
+    ["completion_date", "completion_message", "created_at", "description", "due_date", "id", "priority", "reminder_time", "title", "updated_at", "user_id"]
+  end
+
 end
