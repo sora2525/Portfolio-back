@@ -55,7 +55,21 @@ Rails.application.configure do
 
   # Highlight code that enqueued background job in logs.
   config.active_job.verbose_enqueue_logs = true
+  
+  # config.action_mailer.delivery_method = :letter_opener_web
+  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address:              'smtp.engn.jp',        # BlastengineのSMTPホスト名
+    port:                 587,                   # 推奨ポート番号
+    domain:               'your-domain.com',     # 送信元のドメイン名
+    user_name:            ENV['BLASTENGINE_SMTP_USERNAME'],  # BlastengineのSMTP認証ID
+    password:             ENV['BLASTENGINE_SMTP_PASSWORD'],  # BlastengineのSMTP認証パスワード
+    authentication:       :login,                # 認証方式 (PLAIN, LOGINなど)
+    enable_starttls_auto: true                   # TLSの有効化
+  }
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
