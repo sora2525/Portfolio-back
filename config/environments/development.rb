@@ -62,13 +62,13 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    address:              'smtp.engn.jp',        # BlastengineのSMTPホスト名
-    port:                 587,                   # 推奨ポート番号
-    domain:               'your-domain.com',     # 送信元のドメイン名
-    user_name:            ENV['BLASTENGINE_SMTP_USERNAME'],  # BlastengineのSMTP認証ID
-    password:             ENV['BLASTENGINE_SMTP_PASSWORD'],  # BlastengineのSMTP認証パスワード
-    authentication:       :login,                # 認証方式 (PLAIN, LOGINなど)
-    enable_starttls_auto: true                   # TLSの有効化
+    address: 'smtp.mailgun.org',
+    port: 587,
+    domain: ENV['MAILGUN_DOMAIN'],
+    user_name: ENV['MAILGUN_SMTP_LOGIN'],
+    password: ENV['MAILGUN_SMTP_PASSWORD'],
+    authentication: :plain,
+    enable_starttls_auto: true
   }
 
   # Raises error for missing translations.

@@ -6,7 +6,8 @@ DeviseTokenAuth.setup do |config|
   # this to false to prevent the Authorization header from changing after
   # each request.
 
-  config.default_password_reset_url = 'http://localhost:8000/password-reset'
+  config.default_password_reset_url = ENV['FRONT_URL'] + '/password-reset'
+
   config.change_headers_on_each_request = false
 
   # By default, users will need to re-authenticate after 2 weeks. This setting
