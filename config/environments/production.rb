@@ -2,6 +2,11 @@ require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
   # SMTP設定（Mailgun）
+  config.action_mailer.default_url_options = {
+  host: 'moe-todo-back-21c0a9ec06a3.herokuapp.com',
+  protocol: 'https'
+}
+
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
     address: 'smtp.mailgun.org',
