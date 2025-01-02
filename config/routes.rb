@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       resources :tags
       resources :chats, only: [:index, :create, :destroy]
       delete '/chats', to: 'chats#destroy_all'
+      post '/line_webhook', to: 'line_webhook#callback'
     end
   end
 end

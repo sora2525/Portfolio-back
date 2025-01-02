@@ -39,6 +39,7 @@ gem "devise"
 gem "devise-i18n"
 gem "devise_token_auth"
 gem 'ransack'
+gem 'line-bot-api'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
