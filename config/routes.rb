@@ -7,6 +7,7 @@ Rails.application.routes.draw do
       }
       namespace :auth do
         post 'google_login', to: 'google_login#create'
+        post 'line_login', to: 'line_login#create'
       end
       resources :tasks
       resources :tags

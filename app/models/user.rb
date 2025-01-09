@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class User < ActiveRecord::Base
   has_many :tasks, dependent: :destroy
   has_many :tags, dependent: :destroy
@@ -7,16 +5,20 @@ class User < ActiveRecord::Base
   has_one :preference, dependent: :destroy
   after_create :create_default_preference
 
-
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
   include DeviseTokenAuth::Concerns::User
 
+  # バリデーション
   validates :password, presence: true, on: :create
 
+  # line_user_id と line_sub を明示
+  attr_accessor :line_user_id, :line_sub
+
   private 
+
   def create_default_preference
     create_preference(affnity_level: 0) 
   end
