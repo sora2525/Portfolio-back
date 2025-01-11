@@ -14,9 +14,6 @@ class User < ActiveRecord::Base
   # バリデーション
   validates :password, presence: true, on: :create
 
-  # line_user_id と line_sub を明示
-  attr_accessor :line_user_id, :line_sub
-
   private 
 
   def create_default_preference
