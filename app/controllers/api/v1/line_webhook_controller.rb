@@ -1,6 +1,4 @@
-require 'net/http'
-require 'uri'
-require 'json'
+require 'line/bot'
 
 class Api::V1::LineWebhookController < ApplicationController
 
@@ -17,12 +15,12 @@ class Api::V1::LineWebhookController < ApplicationController
     end
 
     # LINEから送信されたイベント情報を取得
-    events = JSON.parse(body)['events']
+    events = client.parse_events_from(body)
     events.each do |event|
-      case event['type']
-      when 'message' # ユーザーがメッセージを送信した場合
+      case event
+      when Line::Bot::Event::Message # ユーザーがメッセージを送信した場合
         handle_message_event(event)
-      when 'follow' # ユーザーがBotを友だち追加した場合
+      when Line::Bot::Event::Follow # ユーザーがBotを友だち追加した場合
         handle_follow_event(event)
       end
     end
@@ -32,59 +30,46 @@ class Api::V1::LineWebhookController < ApplicationController
 
   private
 
+  # LINEクライアントのインスタンス
+  def client
+    @client ||= Line::Bot::Client.new do |config|
+      config.channel_secret = ENV['LINE_CHANNEL_SECRET']
+      config.channel_token = ENV['LINE_ACCESS_TOKEN']
+    end
+  end
+
   # 署名検証
   def validate_signature(body, signature)
-    channel_secret = ENV['LINE_CHANNEL_SECRET']
-    hash = OpenSSL::HMAC.digest(OpenSSL::Digest::SHA256.new, channel_secret, body)
-    Base64.strict_encode64(hash) == signature
+    client.validate_signature(body, signature)
   end
 
   # メッセージイベントの処理
   def handle_message_event(event)
     user_id = event['source']['userId'] # ユーザーのLINE ID
-    user_message = event['message']['text'] # ユーザーが送信したメッセージ
+    user_message = event.message['text'] # ユーザーが送信したメッセージ
 
     # 応答メッセージを生成
-    response_message = "あなたのメッセージ: #{user_message}"
+    response_message = {
+      type: 'text',
+      text: "あなたのメッセージ: #{user_message}"
+    }
 
-    # プッシュメッセージを送信
-    send_push_message(user_id, response_message)
+    # 応答メッセージを送信
+    client.reply_message(event['replyToken'], response_message)
   end
 
   # 友だち追加イベントの処理
   def handle_follow_event(event)
     user_id = event['source']['userId']
 
-    # ユーザーをデータベースに保存（データベース設計が必要）
+    # ユーザーをデータベースに保存
     User.find_or_create_by(line_user_id: user_id)
 
-    # プッシュメッセージを送信
-    send_push_message(user_id, "友だち追加ありがとうございます！")
-  end
-
-  # プッシュメッセージを送信するメソッド
-  def send_push_message(user_id, text)
-    uri = URI.parse("https://api.line.me/v2/bot/message/push")
-    header = {
-      'Content-Type': 'application/json',
-      'Authorization': "Bearer #{ENV['LINE_ACCESS_TOKEN']}"
+    # 挨拶メッセージを送信
+    greeting_message = {
+      type: 'text',
+      text: '友だち追加ありがとうございます！'
     }
-    body = {
-      to: user_id,
-      messages: [
-        {
-          type: 'text',
-          text: text
-        }
-      ]
-    }
-
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true
-    request = Net::HTTP::Post.new(uri.request_uri, header)
-    request.body = body.to_json
-    response = http.request(request)
-
-    Rails.logger.info("LINE API Response: #{response.body}")
+    client.push_message(user_id, greeting_message)
   end
 end
