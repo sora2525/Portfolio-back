@@ -12,6 +12,11 @@ Rails.application.routes.draw do
       end
       resources :tasks
       resources :tags
+      resources :diaries do
+        collection do
+          get 'public_index', to: 'diaries#public_index'
+        end
+      end
       resources :chats, only: [:index, :create, :destroy]
       delete '/chats', to: 'chats#destroy_all'
       post '/line_webhook', to: 'line_webhook#callback'
