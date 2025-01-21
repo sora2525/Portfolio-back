@@ -22,7 +22,7 @@ Rails.application.configure do
   config.eager_load = true
   config.consider_all_requests_local = false
 
-  config.active_storage.service = :local
+  config.active_storage.service = :amazon
 
   # SSLを強制
   config.force_ssl = true

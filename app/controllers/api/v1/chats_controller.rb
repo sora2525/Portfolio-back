@@ -24,8 +24,6 @@ class Api::V1::ChatsController < ApplicationController
       head :no_content 
     end
     
-    
-  
     private
   
     # Strong Parameters

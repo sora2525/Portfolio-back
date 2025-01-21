@@ -6,7 +6,7 @@ class Api::V1::DiariesController < ApplicationController
         @diaries = current_api_v1_user.diaries.includes(:user, images_attachments: :blob)
         render json: @diaries.to_json(
           include: {
-            user: { only: [:name, :iconUrl] }
+            user: { only: [:id,:name, :iconUrl] }
           }
         )
       end
@@ -15,7 +15,7 @@ class Api::V1::DiariesController < ApplicationController
         @diaries = Diary.where(is_public: true).includes(:user, images_attachments: :blob)
         render json: @diaries.to_json(
           include: {
-            user: { only: [:name, :iconUrl] }
+            user: { only: [:id,:name, :iconUrl] }
           }
         )
       end
