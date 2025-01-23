@@ -1,39 +1,46 @@
-require 'open-uri'  # リモートファイルを開くために必要
+require 'open-uri'  
 
 module Api
   module V1
     module Auth
       class GoogleLoginController < ApplicationController
         def create
-          user = User.find_or_initialize_by(uid: params[:uid], provider: params[:provider])
-
-          begin
-            avatar_file = URI.open(params[:image])
-          rescue OpenURI::HTTPError => e
-            avatar_file = nil
-            Rails.logger.error "画像のダウンロードに失敗しました: #{e.message}"
-          end
-
-          user.assign_attributes(
-            uid: params[:uid],
-            name: params[:name],
-            provider: params[:provider],
-            password: Devise.friendly_token[0, 20]
-          )
-
-          # アバターが未添付の場合に画像を添付
-          if avatar_file && !user.avatar.attached?
-            user.avatar.attach(
-              io: avatar_file,
-              filename: "avatar.jpg", 
-              content_type: avatar_file.content_type
-            )
-          end
-
-          if user.save
+          # ユーザーを検索
+          user = User.find_by(uid: params[:uid], provider: params[:provider])
+        
+          if user
             create_and_return_token(user)
           else
-            render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+            # ユーザーが見つからない場合  新しいユーザーを作成
+            begin
+              avatar_file = URI.open(params[:image])
+            rescue OpenURI::HTTPError => e
+              avatar_file = nil
+              Rails.logger.error "画像のダウンロードに失敗しました: #{e.message}"
+            end
+        
+            user = User.new(
+              uid: params[:uid],
+              name: params[:name],
+              provider: params[:provider],
+              password: Devise.friendly_token[0, 20]
+            )
+        
+            if avatar_file && avatar_file.respond_to?(:content_type)
+              user.avatar.attach(
+                io: avatar_file,
+                filename: "avatar.jpg",
+                content_type: avatar_file.content_type
+              )
+            else
+              Rails.logger.warn "アバター画像を添付できませんでした。ファイルが無効か、既に添付されています。"
+            end
+        
+            if user.save
+              create_and_return_token(user)
+            else
+              render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+            end
           end
         end
 

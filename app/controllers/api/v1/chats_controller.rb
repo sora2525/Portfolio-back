@@ -26,7 +26,6 @@ class Api::V1::ChatsController < ApplicationController
     
     private
   
-    # Strong Parameters
     def chat_params
       params.require(:chat).permit(:message_type, :message)
     end

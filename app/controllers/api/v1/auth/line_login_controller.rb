@@ -3,17 +3,11 @@ module Api
       module Auth
         class LineLoginController < ApplicationController
           def create
-            user = User.find_by(uid: params[:uid], provider: params[:provider])
+            user = User.find_by(line_sub: params[:line_sub])
   
             if user
               create_and_return_token(user)
             else
-              user = User.find_by(line_sub: params[:line_sub])
-  
-              if user
-                user.update(uid: params[:uid], provider: params[:provider])
-                create_and_return_token(user)
-              else
                 user = User.new(
                   uid: params[:uid],
                   name: params[:name],
@@ -22,13 +16,11 @@ module Api
                   line_sub: params[:line_sub],
                   password: Devise.friendly_token[0, 20]
                 )
-  
                 if user.save
                   create_and_return_token(user)
                 else
                   render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
                 end
-              end
             end
           end
   

@@ -3,28 +3,29 @@ class Api::V1::DiariesController < ApplicationController
     before_action :set_diary, only: [:show,:update,:destroy]
 
     def index
-        @diaries = current_api_v1_user.diaries.includes(user: { avatar_attachment: :blob }, images_attachments: :blob)
-        render json: @diaries.to_json(
-          include: {
-            user: { 
-              only: [:id, :name], 
-              methods: [:avatar_url]  
-            }
+      @diaries = current_api_v1_user.diaries.includes(user: { avatar_attachment: :blob }, images_attachments: :blob).order(created_at: :desc) 
+      render json: @diaries.to_json(
+        include: {
+          user: { 
+            only: [:id, :name], 
+            methods: [:avatar_url]  
           }
-        )
-      end
-          
-      def public_index
-        @diaries = Diary.where(is_public: true).includes(user: { avatar_attachment: :blob }, images_attachments: :blob)
-        render json: @diaries.to_json(
-          include: {
-            user: { 
-              only: [:id, :name],
-              methods: [:avatar_url]
-            }
+        }
+      )
+  end
+  
+  def public_index
+      @diaries = Diary.where(is_public: true).includes(user: { avatar_attachment: :blob }, images_attachments: :blob).order(created_at: :desc) 
+      render json: @diaries.to_json(
+        include: {
+          user: { 
+            only: [:id, :name],
+            methods: [:avatar_url]
           }
-        )
-      end
+        }
+      )
+  end
+  
 
     def show
         if @diary.is_public || @diary.user == current_api_v1_user

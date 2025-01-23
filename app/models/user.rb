@@ -22,7 +22,7 @@ class User < ActiveRecord::Base
   end
 
   def avatar_url
-    Rails.application.routes.url_helpers.url_for(avatar) if avatar.attached?
+    avatar.attached? ? Rails.application.routes.url_helpers.url_for(avatar) : nil
   end
 
   public
