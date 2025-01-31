@@ -13,7 +13,10 @@ class User < ActiveRecord::Base
   include DeviseTokenAuth::Concerns::User
 
   # バリデーション
+  validates :name, presence: true, length: { maximum: 50 }
   validates :password, presence: true, on: :create
+  validates :line_sub, uniqueness: true, allow_nil: true
+  
 
   private 
 

@@ -2,7 +2,7 @@
 
 DeviseTokenAuth.setup do |config|
   # パスワードリセット用のデフォルトURL
-  config.default_password_reset_url = 'https://task-yell.vercel.app/password-reset'
+  config.default_password_reset_url = 'https://www.task-yell.jp/password-reset'
 
   # リクエストごとにAuthorizationヘッダーを変更しない設定
   config.change_headers_on_each_request = false
