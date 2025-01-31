@@ -6,7 +6,7 @@ module Api
       class GoogleLoginController < ApplicationController
         def create
           # ユーザーを検索
-          user = User.find_by(uid: params[:uid], provider: params[:provider])
+          user = User.find_by(uid: params[:uid])
         
           if user
             create_and_return_token(user)
