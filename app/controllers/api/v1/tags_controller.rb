@@ -17,10 +17,6 @@ class Api::V1::TagsController < ApplicationController
         end
     end
 
-    def update 
-        
-    end
-
     def destroy
         @tag = current_api_v1_user.tags.find(params[:id])
         if @tag.destroy

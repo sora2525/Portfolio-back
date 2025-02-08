@@ -7,6 +7,9 @@ Devise.setup do |config|
   # ORM設定（ActiveRecordを使用）
   require 'devise/orm/active_record'
 
+  config.navigational_formats = []
+
+
   # 認証キーの設定
   config.case_insensitive_keys = [:email]
   config.strip_whitespace_keys = [:email]

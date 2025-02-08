@@ -34,22 +34,23 @@ class Api::V1::TasksController < ApplicationController
 
   def create
     @task = current_api_v1_user.tasks.new(task_params)
-
+  
     # タグの数が5個を超えていないか確認
-    if params[:task][:tags].size > 5
+    if params[:task][:tags].present? && params[:task][:tags].size > 5
       return render json: { errors: 'タグは最大5個までです' }, status: :unprocessable_entity
     end
-
+  
+    if params[:task][:tags].present?
+      @task.tags = Tag.where(id: params[:task][:tags])
+    end
+  
     if @task.save
-      if params[:task][:tags].present?
-        # タグIDをTagインスタンスに変換して関連付け
-        @task.tags = Tag.where(id: params[:task][:tags])
-      end
       render json: @task, include: :tags, status: :created
     else
       render json: { errors: @task.errors.full_messages }, status: :unprocessable_entity
     end
   end
+  
 
   def update
     if params[:task][:tags]&.size.to_i > 5

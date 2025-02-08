@@ -73,6 +73,8 @@ Rails.application.configure do
     enable_starttls_auto: true
   }
 
+   config.hosts << "www.example.com"
+
   config.hosts << /.*\.loca\.lt/
   config.hosts << /[a-z0-9-]+\.ngrok-free\.app/
   # Raises error for missing translations.

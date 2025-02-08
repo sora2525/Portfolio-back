@@ -51,7 +51,7 @@ class Api::V1::LineWebhookController < ApplicationController
     # 応答メッセージを生成
     response_message = {
       type: 'text',
-      text: "あなたのメッセージ: #{user_message}"
+      text: "タスクエールで待ってるね！\nhttps://www.task-yell.jp"
     }
 
     # 応答メッセージを送信
@@ -68,7 +68,7 @@ class Api::V1::LineWebhookController < ApplicationController
     # 挨拶メッセージを送信
     greeting_message = {
       type: 'text',
-      text: '友だち追加ありがとうございます！'
+      text: '友だち追加ありがとうございます！\nhttps://www.task-yell.jp'
     }
     client.push_message(user_id, greeting_message)
   end
