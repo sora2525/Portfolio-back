@@ -34,39 +34,46 @@ class Api::V1::TasksController < ApplicationController
 
   def create
     @task = current_api_v1_user.tasks.new(task_params)
-
+  
     # タグの数が5個を超えていないか確認
-    if params[:task][:tags].size > 5
+    if params[:task][:tags].present? && params[:task][:tags].size > 5
       return render json: { errors: 'タグは最大5個までです' }, status: :unprocessable_entity
     end
-
+  
+    if params[:task][:tags].present?
+      @task.tags = Tag.where(id: params[:task][:tags])
+    end
+  
     if @task.save
-      if params[:task][:tags].present?
-        # タグIDをTagインスタンスに変換して関連付け
-        @task.tags = Tag.where(id: params[:task][:tags])
-      end
       render json: @task, include: :tags, status: :created
     else
       render json: { errors: @task.errors.full_messages }, status: :unprocessable_entity
     end
   end
+  
 
   def update
+    if params[:task][:tags]&.size.to_i > 5
+      return render json: { errors: 'タグは最大5個までです' }, status: :unprocessable_entity
+    end
+  
     if @task.update(task_params)
-
-      if params[:task][:tags].size > 5
-        return render json: { errors: 'タグは最大5個までです' }, status: :unprocessable_entity
-      end
-      
       if params[:task][:tags]
         @task.tags = Tag.where(id: params[:task][:tags]) 
       end
-
-      # completion_dateがnilならcompletion_messageをnilに設定
-      if @task.completion_date.nil?
-        @task.update(completion_message: nil)
+  
+      # reminder_timeが変更された場合、notifiedをfalseに設定
+      if @task.saved_change_to_reminder_time?
+        @task.assign_attributes(notified: false)
       end
-
+  
+      # completion_dateがnilの場合、completion_messageをnilに設定
+      if @task.completion_date.nil?
+        @task.assign_attributes(completion_message: nil)
+      end
+  
+      @task.save
+  
       render json: @task, include: :tags
     else
       render json: @task.errors, status: :unprocessable_entity

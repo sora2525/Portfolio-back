@@ -7,6 +7,8 @@ Rails.application.configure do
   # it changes. This slows down response time but is perfect for development
   # since you don't have to restart the web server when you make code changes.
   config.enable_reloading = true
+  Rails.application.routes.default_url_options[:host] = "localhost:3000"
+
 
   # Do not eager load code on boot.
   config.eager_load = false
@@ -62,15 +64,19 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    address:              'smtp.engn.jp',        # BlastengineのSMTPホスト名
-    port:                 587,                   # 推奨ポート番号
-    domain:               'your-domain.com',     # 送信元のドメイン名
-    user_name:            ENV['BLASTENGINE_SMTP_USERNAME'],  # BlastengineのSMTP認証ID
-    password:             ENV['BLASTENGINE_SMTP_PASSWORD'],  # BlastengineのSMTP認証パスワード
-    authentication:       :login,                # 認証方式 (PLAIN, LOGINなど)
-    enable_starttls_auto: true                   # TLSの有効化
+    address: 'smtp.mailgun.org',
+    port: 587,
+    domain: ENV['MAILGUN_DOMAIN'],
+    user_name: ENV['MAILGUN_SMTP_LOGIN'],
+    password: ENV['MAILGUN_SMTP_PASSWORD'],
+    authentication: :plain,
+    enable_starttls_auto: true
   }
 
+   config.hosts << "www.example.com"
+
+  config.hosts << /.*\.loca\.lt/
+  config.hosts << /[a-z0-9-]+\.ngrok-free\.app/
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
 

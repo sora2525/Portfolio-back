@@ -39,12 +39,20 @@ gem "devise"
 gem "devise-i18n"
 gem "devise_token_auth"
 gem 'ransack'
+gem 'line-bot-api'
+gem 'aws-sdk-s3'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
   gem 'letter_opener_web'
+  gem 'rspec-rails'  # RSpecの本体
+  gem 'factory_bot_rails'  # テストデータ作成用
+  gem 'faker'  # ダミーデータ作成用（任意）
 end
+
+  
+
 
 group :development do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
