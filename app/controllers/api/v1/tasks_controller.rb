@@ -1,6 +1,6 @@
 class Api::V1::TasksController < ApplicationController
   include DeviseTokenAuth::Concerns::SetUserByToken
-  
+
   before_action :authenticate_api_v1_user!
   before_action :set_task, only: [:show, :update, :destroy]
 
@@ -23,13 +23,12 @@ class Api::V1::TasksController < ApplicationController
       end
     end
   
-    render json: @tasks.to_json(include: :tags)
-  end
-  
+    render json: @tasks, each_serializer: ModelTaskSerializer
 
+  end
 
   def show
-    render json: @task, include: :tags
+    render json: @task, serializer: ModelTaskSerializer,include: :tags
   end
 
   def create
@@ -45,7 +44,7 @@ class Api::V1::TasksController < ApplicationController
     end
   
     if @task.save
-      render json: @task, include: :tags, status: :created
+      render json: @task, serializer: ModelTaskSerializer, status: :created
     else
       render json: { errors: @task.errors.full_messages }, status: :unprocessable_entity
     end
@@ -74,7 +73,7 @@ class Api::V1::TasksController < ApplicationController
   
       @task.save
   
-      render json: @task, include: :tags
+      render json: @task,serializer: ModelTaskSerializer, include: :tags
     else
       render json: @task.errors, status: :unprocessable_entity
     end
