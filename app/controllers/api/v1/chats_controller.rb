@@ -4,7 +4,7 @@ class Api::V1::ChatsController < ApplicationController
   # チャット履歴を取得
   def index
     @chats = current_api_v1_user.chats.order(created_at: :asc)
-    render json: @chats
+    render json: @chats,each_serializer: ChatSerializer
   end
 
   # チャットを作成
@@ -12,7 +12,7 @@ class Api::V1::ChatsController < ApplicationController
     @chat = current_api_v1_user.chats.new(chat_params)
 
     if @chat.save
-      render json: @chat
+      render json: @chat,serializer: ChatSerializer
     else
       render json: { error: @chat.errors.full_messages }, status: :unprocessable_entity
     end

@@ -4,14 +4,8 @@ class Api::V1::DiariesController < ApplicationController
   
     def index
       @diaries = current_api_v1_user.diaries.includes(user: { avatar_attachment: :blob }, images_attachments: :blob).order(created_at: :desc)
-      render json: @diaries.to_json(
-        include: {
-          user: { 
-            only: [:id, :name], 
-            methods: [:avatar_url]
-          }
-        }
-      )
+      render json: @diaries, each_serializer: DiarySerializer
+
     end
   
     def public_index

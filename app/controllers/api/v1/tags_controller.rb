@@ -3,15 +3,15 @@ class Api::V1::TagsController < ApplicationController
 
 
     def index
-        @tags = current_api_v1_user.tags 
-        render json: @tags
+        @tags = current_api_v1_user.tags.includes(:tasks) 
+        render json: @tags, each_serializer: TagSerializer
     end
 
     def create
         @tag = current_api_v1_user.tags.build(tags_params)
         
         if @tag.save
-          render json: @tag, status: :created
+          render json: @tag,serializer: TagSerializer, status: :created
         else
           render json: { errors: @tag.errors.full_messages }, status: :unprocessable_entity
         end
